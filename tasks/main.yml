@@ -1,0 +1,32 @@
+---
+- name: Install prequisites
+  apt:
+    update_cache: yes
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+
+- name: Add docker apt key
+  apt_key:
+      url: "{{docker_key_url}}"
+      state: present
+
+- name: Get architecture
+  shell: "dpkg --print-architecture"
+  register: pkg_architecture
+  changed_when: false
+
+- name: Add docker repo
+  apt_repository:
+    repo: "deb [arch={{ pkg_architecture.stdout }}] {{ docker_download_url }}/linux/{{ linux_distro }} {{ dist_version }} {{ channel }}"
+    filename: "docker"
+  when: not ansible_check_mode
+
+- name: Install docker
+  apt:
+    name: "docker-ce"
+    install_recommends: no
