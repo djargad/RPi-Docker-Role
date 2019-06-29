@@ -12,8 +12,8 @@
 
 - name: Add docker apt key
   apt_key:
-      url: "{{docker_key_url}}"
-      state: present
+    url: "{{ docker_key_url }}"
+    state: present
 
 - name: Get architecture
   shell: "dpkg --print-architecture"
